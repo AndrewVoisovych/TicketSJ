@@ -5,15 +5,15 @@ The solution is created according to intership task.
 -Settings:
 
 Project Data:
- - Generate a unique ticket number: numbers.dat (via serialization)
- - WebAPi data for generating: bin\Debug\netcoreapp2.0\info\
- - Generated logs Windows Service: \bin\Debug\Logs\
+ - Generate a unique ticket number: TicketJSWebAPI\TicketJSWebAPI\numbers.dat (via serialization)
+ - WebAPi data for generating: TicketJSWebAPI\TicketJSWebAPI\bin\Debug\netcoreapp2.0\info\
+ - Generated logs Windows Service: *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\Logs\
 
 Adding and Removing Windows Services
 In CMD with administrator privileges:
 cd C:\Windows\Microsoft.NET\Framework\v4.0.30319 
-add: InstallUtil.exe *fullpath*.exe
-remove: InstallUtil.exe -u *fullpath*.exe
+add: InstallUtil.exe *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\TicketSJWindowsService.exe
+remove: InstallUtil.exe -u *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\TicketSJWindowsService.exe
 
 Adding Model Database in project .NET CORE
 In Package Manager:
