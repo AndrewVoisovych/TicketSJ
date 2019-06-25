@@ -1,13 +1,13 @@
 # TicketSJ
-The solution is created according to intership task.\n
+The solution is created according to intership task.
 -With help of ASP.NET Core Web API Json generated Ticket with Enity sample and randomly filled and send to Azure ServiceBus.\n
--Windows Service reads the Ticket from the Azure ServiceBus queue  added to Azure Sql and writes logs.\n
--Settings:\n
-\n
-Project Data:\n
- - Generate a unique ticket number: numbers.dat (via serialization)\n
- - WebAPi data for generating: bin\Debug\netcoreapp2.0\info\\n
- - Generated logs Windows Service: \bin\Debug\Logs\\n
+-Windows Service reads the Ticket from the Azure ServiceBus queue  added to Azure Sql and writes logs.
+-Settings:
+
+Project Data:
+ - Generate a unique ticket number: numbers.dat (via serialization)
+ - WebAPi data for generating: bin\Debug\netcoreapp2.0\info\
+ - Generated logs Windows Service: \bin\Debug\Logs\
 
 Adding and Removing Windows Services
 In CMD with administrator privileges:
