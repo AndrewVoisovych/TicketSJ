@@ -33,6 +33,7 @@ namespace TicketJSWebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+           
 
             app.UseMvc(routes =>
             {
