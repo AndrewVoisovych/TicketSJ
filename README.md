@@ -1,7 +1,7 @@
-# H1 TicketSJ
-# H2 The solution is created according to intership task.
--With help of ASP.NET Core Web API Json generated Ticket with Enity sample and randomly filled and send to Azure ServiceBus.  
--Windows Service "Receive Message", reads the Ticket from the Azure ServiceBus queue added to Azure Sql and writes logs.  
+# TicketSJ
+## The solution is created according to intership task.
+With help of ASP.NET Core Web API Json generated Ticket with Enity sample and randomly filled and send to Azure ServiceBus.  
+Windows Service "Receive Message", reads the Ticket from the Azure ServiceBus queue added to Azure Sql and writes logs.  
   
 -Settings:  
   
