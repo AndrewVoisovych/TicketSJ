@@ -12,12 +12,14 @@ Windows Service "Receive Message", reads the Ticket from the Azure ServiceBus qu
   
 ### Adding and Removing Windows Services  
 In CMD with administrator privileges:  
-cd C:\Windows\Microsoft.NET\Framework\v4.0.30319  
-add: InstallUtil.exe *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\TicketSJWindowsService.exe
-remove: InstallUtil.exe -u *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\TicketSJWindowsService.exe
+> cd C:\Windows\Microsoft.NET\Framework\v4.0.30319  
+add: 
+> InstallUtil.exe *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\TicketSJWindowsService.exe
+remove:
+> InstallUtil.exe -u *path*\TicketJSWebAPI\TicketSJWindowsService\bin\Debug\TicketSJWindowsService.exe
 
 ### Adding Model Database in project .NET CORE
 In Package Manager:
-Scaffold-DbContext "*Your Connection String*" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+> Scaffold-DbContext "*Your Connection String*" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
 
 
