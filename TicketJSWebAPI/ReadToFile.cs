@@ -10,14 +10,16 @@ namespace TicketJSWebAPI
     class ReadToFIle
     {
         private List<string> result;
+        private List<string> logsList;
 
         public ReadToFIle(string fileName)
         {
             result = new List<string>();
+            logsList = new List<string>();
             string filepath = AppDomain.CurrentDomain.BaseDirectory + "\\Info\\" + fileName + ".txt";
             if (!File.Exists(filepath))
             {
-                // Console.WriteLine("NO FILE ");
+                logsList.Add("The" + fileName + "file does not exist, read error");
             }
             else
             {
@@ -35,6 +37,10 @@ namespace TicketJSWebAPI
         public List<string> GetResult()
         {
             return this.result;
+        }
+        public List<string> GetLogs()
+        {
+            return logsList;
         }
     }
 }

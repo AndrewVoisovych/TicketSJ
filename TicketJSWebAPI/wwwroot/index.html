@@ -1,0 +1,97 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin-top: 7%;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+    </style>
+    <title>Web API - Ticket</title>
+</head>
+<body>
+    <form>
+        <div class="form-group">
+            <center> <label for="customRange3">Select the number of tickets</label></center>
+            <input type="range" onclick="RangeValue()" class="custom-range" value="10" min="0" max="50" step="1" id="customRange">
+            <center>
+                <div id="rangediv">Value: 10</div>
+            </center>
+        </div>
+        <div class="form-group" style="margin-top: 5%;">
+            <center><label for="exampleFormControlTextarea1">Logs:</label></center>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="10"></textarea>
+        </div>
+        <center><button type="button" onclick="GetResult()" class="btn btn-success" style="padding: 2%; padding-left: 6%; padding-right: 6%;">Send</button></center>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Result</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalbodyid" class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        function RangeValue() {
+            var rangeElement = document.getElementById("customRange").value;
+            var insertElement = document.getElementById("rangediv").innerHTML = "Value: " + rangeElement;
+        }
+        function GetResult() {
+            var rangeElement = document.getElementById("customRange").value;
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Messages',
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(rangeElement),
+                statusCode: {
+                    200: function (value) {
+                        PrintLogs(value);
+                        document.getElementById("modalbodyid").innerHTML = 'Successfully sent!';
+                        $('#exampleModalCenter').modal('toggle');
+
+                    },
+                    500: function (value) {
+                        PrintLogs(value);
+                        document.getElementById("modalbodyid").innerHTML = 'Unsuccessful sending (error in the field)';
+                        $('#exampleModalCenter').modal('toggle');
+                    }
+                }
+            });
+        }
+
+        function PrintLogs(object) {
+            var myTextarea = document.getElementById("exampleFormControlTextarea1");
+            myTextarea.innerHTML = "";
+            for (i = 0; i < object.length; i++) {
+                if (object[i] != null) {
+                    myTextarea.innerHTML += object[i] + "\n";
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
+

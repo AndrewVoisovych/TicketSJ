@@ -24,13 +24,15 @@ namespace TicketJSWebAPI
 
         private List<string> tags { get; set; }
         private List<string> description { get; set; }
-          
-          public DataGenerator(TicketForJson ticket)
+        private List<string> logsList { get; set; }
+
+
+        public DataGenerator(TicketForJson ticket)
           {
             rnd = new Random();
             formatter = new BinaryFormatter();
             getNumber = new CreateUniqueNumber();
-
+            logsList = new List<string>();
 
             ticket.number = NumberGenerator();
             ticket.description = DescriptionGenerator();
@@ -46,7 +48,7 @@ namespace TicketJSWebAPI
             }
             catch(FileNotFoundException)
             {
-                return;
+                logsList.Add("Error writing a unique ticket number");
             }
         }
 
@@ -84,6 +86,7 @@ namespace TicketJSWebAPI
         private string DescriptionGenerator()
         {
             ReadToFIle file = new ReadToFIle("descriptionList");
+            logsList.AddRange(file.GetLogs());
             description = file.GetResult();
             return description[rnd.Next(0, description.Count())];
         }
@@ -91,10 +94,17 @@ namespace TicketJSWebAPI
         private string[] TagsGenerator()
         {
             ReadToFIle file = new ReadToFIle("tagsList");
+            logsList.AddRange(file.GetLogs());
             tags = file.GetResult();
             var shuffled = tags.OrderBy(a => Guid.NewGuid()).ToList();
             int quantityTags = rnd.Next(1, tags.Count());
            return shuffled.Take(quantityTags).ToArray();
         }
+
+        public List<string> GetLogs()
+        {
+            return logsList;
+        }
+
     }
 }

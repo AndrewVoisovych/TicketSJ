@@ -18,17 +18,19 @@ namespace TicketJSWebAPI.Controllers
         private const string QueueName = "softjournqueue";
         static IQueueClient queueClient;
         private int numberOfMessagesToSend;
+        private List<string> logsMessages;
 
         public MessagesController()
         {
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
-            numberOfMessagesToSend = 10;
+            logsMessages = new List<string>();
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] int rangeElement)
         {
+            this.numberOfMessagesToSend = (rangeElement == 0) ? 3 : rangeElement;
             try
             {
                 TicketForJson[] ticket = new TicketForJson[numberOfMessagesToSend];
@@ -39,50 +41,20 @@ namespace TicketJSWebAPI.Controllers
                     ticket[i] = new TicketForJson();
                     dg = new DataGenerator(ticket[i]);
 
+                    logsMessages.AddRange(dg.GetLogs());
+
                     await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ticket[i]))));
+                    logsMessages.Add((i + 1) + ". Ticket number: " + ticket[i].number + " send");
                 }
 
 
-                return StatusCode(200);
+                return StatusCode(200, logsMessages);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return StatusCode(500, e.Message);
+                logsMessages.Add("Unsuccessful sending:" + e.Message);
+                return StatusCode(500, logsMessages);
             }
         }
-
-
-
-        [HttpPost]
-        public async Task<IActionResult> Post()
-        {
-            try
-            {
-                var objJson = new TicketForJson()
-                {
-                    number = 1,
-                    description = "first ticket test",
-                    type = TicketType.free,
-                    dateTime = DateTime.Now,
-                    tags = new string[] { "tags1", "tags2", "tags3" }
-                };
-
-
-                for (var i = 0; i < numberOfMessagesToSend; i++)
-                {
-                    await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(objJson))));
-                }
-
-
-                return StatusCode(200);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return StatusCode(500, e.Message);
-            }
-        }
-
     }
 }
