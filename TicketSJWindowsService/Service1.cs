@@ -14,8 +14,10 @@ namespace TicketSJWindowsService
 {
     public partial class Service1 : ServiceBase
     {
+
         Timer timer = new Timer();
         private WriteToFile writeCommand = new WriteToFile();
+
         public Service1()
         {
             InitializeComponent();
@@ -24,7 +26,7 @@ namespace TicketSJWindowsService
         protected override void OnStart(string[] args)
         {
             writeCommand.Write("Service is started at " + DateTime.Now);
-            ReceiveMessages obj = new ReceiveMessages();
+            ReceiveMessages obj = new ReceiveMessages(); // Receive messages and process them
 
         }
 

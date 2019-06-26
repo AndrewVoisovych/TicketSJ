@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace TicketSJWindowsService
 {
+    //Ticket model for serialization / deserialization Json relatively Entity sample
     public enum TicketType { free, paid, preferential, special};
     public class TicketForJson
     {

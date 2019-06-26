@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TicketSJWindowsService
 {
+    // To write to the log file information 
     class WriteToFile
     {
         public void  Write(string Message)

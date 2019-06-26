@@ -10,20 +10,23 @@ using Newtonsoft.Json;
 
 namespace TicketSJWindowsService
 {
+
+    //The class that reads out the Azure ServiceBus queue and calls for adding to Azure Sql as well as logging data
     class ReceiveMessages
     {
+        // Azure ServiceBusConnectionString
         const string ServiceBusConnectionString = "Endpoint=sb://softjourn.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=hpy8CVedWorWIJ7beieC4TdeRFJw03xlqo5BbSNOZtY=";
         const string QueueName = "softjournqueue";
-        static IQueueClient queueClient;
-        static WriteToFile writeCommand;
+
+        
+        static IQueueClient queueClient; //QueueClient can be used for all basic interactions with a Service Bus Queue.
+        static WriteToFile writeCommand; //Write Logs Data Command
        
         public ReceiveMessages()
         {
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
             writeCommand = new WriteToFile();
-            RegisterOnMessageHandlerAndReceiveMessages();
-            
-            
+            RegisterOnMessageHandlerAndReceiveMessages();    
         }
 
         static void RegisterOnMessageHandlerAndReceiveMessages()
@@ -47,19 +50,22 @@ namespace TicketSJWindowsService
 
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
-            // Process the message
+            // Process the message and write to log
            writeCommand.Write($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
           
-
-           
 
             // Complete the message so that it is not received again.
             // This can be done only if the queueClient is created in ReceiveMode.PeekLock mode (which is default).
             await queueClient.CompleteAsync(message.SystemProperties.LockToken);
 
-           TicketForJson ticket = JsonConvert.DeserializeObject<TicketForJson>(Encoding.UTF8.GetString(message.Body));
-           AddingToDatabase objectToDatabase = new AddingToDatabase();
-           writeCommand.Write(objectToDatabase.Add(ticket)+"\n");
+            //Deserialize Object to class
+            TicketForJson ticket = JsonConvert.DeserializeObject<TicketForJson>(Encoding.UTF8.GetString(message.Body));
+            
+            //Add to Database
+            AddingToDatabase objectToDatabase = new AddingToDatabase();
+
+            // Write to log
+            writeCommand.Write(objectToDatabase.Add(ticket)+"\n");
 
             // Note: Use the cancellationToken passed as necessary to determine if the queueClient has already been closed.
             // If queueClient has already been Closed, you may chose to not call CompleteAsync() or AbandonAsync() etc. calls 
@@ -76,6 +82,5 @@ namespace TicketSJWindowsService
             //Console.WriteLine($"- Executing Action: {context.Action}");
             return Task.CompletedTask;
         }
-
     }
 }
