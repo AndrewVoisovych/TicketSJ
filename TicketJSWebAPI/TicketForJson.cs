@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace TicketJSWebAPI
 {
+    //Ticket model for serialization / deserialization Json relatively Entity sample
     public enum TicketType { free, paid, preferential, special};
     public class TicketForJson
     {
