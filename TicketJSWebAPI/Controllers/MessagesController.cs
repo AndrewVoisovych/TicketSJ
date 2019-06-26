@@ -15,9 +15,11 @@ namespace TicketJSWebAPI.Controllers
     public class MessagesController : Controller
     {
         // Azure ServiceBusConnectionString
-        private const string ServiceBusConnectionString = "Endpoint=sb://softjourn.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=hpy8CVedWorWIJ7beieC4TdeRFJw03xlqo5BbSNOZtY=";
-        private const string QueueName = "softjournqueue";
+        private  ConfigurationHelper configuration; //Class Configuration Helper
+        private  string ServiceBusConnectionString;
+        private  string QueueName;
        
+
         //QueueClient can be used for all basic interactions with a Service Bus Queue.
         static IQueueClient queueClient;
 
@@ -29,7 +31,12 @@ namespace TicketJSWebAPI.Controllers
 
         public MessagesController()
         {
+            configuration = new ConfigurationHelper();
+            ServiceBusConnectionString = configuration.ServiceBusConnectionString(); //get ServiceBusConnectionString from appsettings.json
+            QueueName = configuration.QueueNameString();//get QueueName from appsettings.json
+
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+
             logsMessages = new List<string>();
         }
 

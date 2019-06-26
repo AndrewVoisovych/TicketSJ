@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace TicketJSWebAPI
 {
-    public static class ConfigurationHelper
+    public class ConfigurationHelper
     {
-        private static string connection;
+        private  string connection;
+        private  string queueName;
 
-        public static string ServiceBusConnectionString()
+        public  string ServiceBusConnectionString()
         {
             if (string.IsNullOrWhiteSpace(connection))
             {
@@ -21,7 +22,17 @@ namespace TicketJSWebAPI
             return connection;
         }
 
-        private static string GetServiceBusConnectionString()
+        public  string QueueNameString()
+        {
+            if (string.IsNullOrWhiteSpace(queueName))
+            {
+                queueName = GetQueueNameString();
+            }
+
+            return queueName;
+        }
+
+        private  string GetServiceBusConnectionString()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -32,5 +43,19 @@ namespace TicketJSWebAPI
             var value = config.GetValue<string>("ServiceBusConnectionString");
             return value;
         }
+
+        private  string GetQueueNameString()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            var config = builder.Build();
+
+            var value = config.GetValue<string>("QueueName");
+            return value;
+        }
+
+
     }
 }
