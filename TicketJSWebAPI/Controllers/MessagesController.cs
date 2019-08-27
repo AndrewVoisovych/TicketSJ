@@ -1,75 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
+using WebAPI.Models;
+using WebAPI.Utils.Helpers;
 
-namespace TicketJSWebAPI.Controllers
+namespace WebAPI.Controllers
 {
 
     [Route("api/[controller]")]
-    public class MessagesController : Controller
+    public sealed class MessagesController : Controller
     {
         // Azure ServiceBusConnectionString
-        private  ConfigurationHelper configuration; //Class Configuration Helper
-        private  string ServiceBusConnectionString;
-        private  string QueueName;
-       
+        /// <summary>
+        /// Class Configuration Helper
+        /// </summary>
+        private ConfigurationHelper configuration; 
+        private readonly string ServiceBusConnectionString;
+        private readonly string QueueName;
 
-        //QueueClient can be used for all basic interactions with a Service Bus Queue.
+        /// <summary>
+        /// QueueClient can be used for all basic interactions with a Service Bus Queue
+        /// </summary>
         static IQueueClient queueClient;
 
-        //Number of tickets to generate
+        /// <summary>
+        /// Number of tickets to generate
+        /// </summary>
         private int numberOfMessagesToSend;
 
-        //Information for print on html
+        /// <summary>
+        /// Information for print on html
+        /// </summary>
         private List<string> logsMessages;
 
         public MessagesController()
         {
             configuration = new ConfigurationHelper();
-            ServiceBusConnectionString = configuration.ServiceBusConnectionString(); //get ServiceBusConnectionString from appsettings.json
-            QueueName = configuration.QueueNameString();//get QueueName from appsettings.json
+
+            //get ServiceBusConnectionString from appsettings.json
+            ServiceBusConnectionString = configuration.ServiceBusConnectionString();
+            
+            //get QueueName from appsettings.json
+            QueueName = configuration.QueueNameString();
 
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
             logsMessages = new List<string>();
+
         }
 
-
+        /// <summary>
+        /// Create, fill and send tickets async
+        /// </summary>
+        /// <param name="rangeElement">Number of tickets to generate</param>
+        /// <returns>Status Code OK 200 or StatusCode Error 500</returns>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] int rangeElement)
+        public async Task<IActionResult> PostAsync([FromBody] int rangeElement)
         {
-            //Number of tickets to generate. Default: 3
-            this.numberOfMessagesToSend = (rangeElement == 0) ? 3 : rangeElement;
+            //Number of tickets to generate. Default: 1
+           numberOfMessagesToSend = (rangeElement == 0) ? 1 : rangeElement;
+
             try
             {
-                TicketForJson[] ticket = new TicketForJson[numberOfMessagesToSend];
-                DataGenerator dg;
+                Ticket[] ticket = new Ticket[numberOfMessagesToSend];
+
+                DataGenerator generatedData;
 
                 for (var i = 0; i < numberOfMessagesToSend; i++)
                 {
-                    ticket[i] = new TicketForJson(); // Generate Ticket
-                    dg = new DataGenerator(ticket[i]); // Generate Data
+                    // Generate Ticket
+                    ticket[i] = new Ticket();
+                    
+                    // Generate Data
+                    generatedData = new DataGenerator(ticket[i]); 
 
 
-                    logsMessages.AddRange(dg.GetLogs());
+                    logsMessages.AddRange(generatedData.GetLogs());
                     
                     //Send
                     await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ticket[i]))));
-                    
-                    logsMessages.Add((i + 1) + ". Ticket number: " + ticket[i].number + " send");
+
+                    logsMessages.Add($"{i+1}. Ticket number: {ticket[i].Number} send");        
+                  
                 }
+
                 //return Status Code OK and Information for print on html
                 return StatusCode(200, logsMessages);
+               
             }
             catch (Exception e)
             {
-                logsMessages.Add("Unsuccessful sending:" + e.Message);
+                logsMessages.Add($"Unsuccessful sending: {e.Message}");
+                
                 //return Status Code Internal Server Error and Information for print on html
                 return StatusCode(500, logsMessages);
             }

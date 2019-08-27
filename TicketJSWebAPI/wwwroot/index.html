@@ -9,13 +9,7 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <style>
-        body {
-            margin-top: 7%;
-            margin-left: 20%;
-            margin-right: 20%;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
     <title>Web API - Ticket</title>
 </head>
 <body>
@@ -51,47 +45,8 @@
             </div>
         </div>
     </form>
-    <script>
-        function RangeValue() {
-            var rangeElement = document.getElementById("customRange").value;
-            var insertElement = document.getElementById("rangediv").innerHTML = "Value: " + rangeElement;
-        }
-        function GetResult() {
-            var rangeElement = document.getElementById("customRange").value;
+    <script src="js/functions.js"></script>
 
-            $.ajax({
-                type: 'POST',
-                url: '/api/Messages',
-                dataType: 'json',
-                contentType: "application/json",
-                data: JSON.stringify(rangeElement),
-                statusCode: {
-                    200: function (value) {
-                        PrintLogs(value);
-                        document.getElementById("modalbodyid").innerHTML = 'Successfully sent!';
-                        $('#exampleModalCenter').modal('toggle');
-
-                    },
-                    500: function (value) {
-                        PrintLogs(value);
-                        document.getElementById("modalbodyid").innerHTML = 'Unsuccessful sending (error in the field)';
-                        $('#exampleModalCenter').modal('toggle');
-                    }
-                }
-            });
-        }
-
-        function PrintLogs(object) {
-            var myTextarea = document.getElementById("exampleFormControlTextarea1");
-            myTextarea.innerHTML = "";
-            for (i = 0; i < object.length; i++) {
-                if (object[i] != null) {
-                    myTextarea.innerHTML += object[i] + "\n";
-                }
-            }
-        }
-
-    </script>
 </body>
 </html>
 

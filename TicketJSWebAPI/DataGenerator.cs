@@ -4,120 +4,167 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
+using WebAPI.Models;
+using WebAPI.Utils;
+using WebAPI.Utils.Helpers;
 
-namespace TicketJSWebAPI
+namespace WebAPI
 {
-    //Class of data generation for Ticket
-
-
-    //To generate a unique number, it is always copied from the file using serialization.
+    /// <summary>
+    /// To generate a unique number, it is always copied from the file using serialization.
+    /// </summary>
     [Serializable]
-    public class CreateUniqueNumber
+    public sealed class CreateUniqueNumber
     {  
         public int number;
     }
 
-    public class DataGenerator
+    /// <summary>
+    /// Class of data generation for Ticket
+    /// </summary>
+    public sealed class DataGenerator
     {
-        private Random rnd;
-        private Stream stream; //work with files
-        private IFormatter formatter; //serialization
+        private Random random;  
+
+        private Stream streamSerializable; //work with files
+        private IFormatter formatterSerializable; //serialization
         private CreateUniqueNumber getNumber;
 
-        private List<string> tags { get; set; }
-        private List<string> description { get; set; }
+       
 
-        //Information for print on html
-        private List<string> logsList { get; set; } //
+        private List<string> Tags { get; set; }
+        private List<string> Description { get; set; }
+
+        private FileReader file;
+        private FileInfoHelper fileInfo;
+
+        /// <summary>
+        ///  Information for print on html
+        /// </summary>
+        private List<string> LogsList { get; set; } 
 
 
-        public DataGenerator(TicketForJson ticket)
+        public DataGenerator(Ticket ticket)
           {
-            rnd = new Random();
-            formatter = new BinaryFormatter();
+            random = new Random();
+            formatterSerializable = new BinaryFormatter();
             getNumber = new CreateUniqueNumber();
-            logsList = new List<string>();
+            LogsList = new List<string>();
+            file = new FileReader();
+            fileInfo = new FileInfoHelper();
 
-            // Get Data
-            ticket.number = NumberGenerator();
-            ticket.description = DescriptionGenerator();
-            ticket.dateTime = DateTimeGenerator();
-            ticket.type = TypeGenerator();
-            ticket.tags = TagsGenerator();
-
-            try
-            {
-                //update serialization file
-                stream = new FileStream("number.dat", FileMode.Open, FileAccess.Write);
-                formatter.Serialize(stream, getNumber);
-                stream.Close();
-            }
-            catch(FileNotFoundException)
-            {
-                // If something happens to the serialization file
-                logsList.Add("Error writing a unique ticket number");
-            }
+            FillingTicket(ticket);
         }
 
+
+        private void FillingTicket(Ticket ticket)
+        {
+            ticket.Number = NumberGenerator();
+            ticket.Description = DescriptionGenerator();
+            ticket.DateTime = DateTimeGenerator();
+            ticket.Type = TypeGenerator();
+            ticket.Tags = TagsGenerator();
+            ValidationSerialization();
+        }
+
+        /// <summary>
+        /// Generate a unique number
+        /// </summary>
+        /// <returns>int: unique number</returns>
         private int NumberGenerator()
         {
+            
             //Number generator. If the serialization file exists - reads the value from it.
             //If value = 0 then 1, otherwise simply increments it.
             //If the serialization file does not exist - create it and value = 1
             try
             {
-                stream = new FileStream("number.dat", FileMode.Open, FileAccess.Read);
-                getNumber = (CreateUniqueNumber)formatter.Deserialize(stream);
+                streamSerializable = new FileStream("number.dat", FileMode.Open, FileAccess.Read);
+                getNumber = (CreateUniqueNumber)formatterSerializable.Deserialize(streamSerializable);
                 getNumber.number = (getNumber.number == 0) ? 1 : ++getNumber.number;
-                stream.Close();
-
+                streamSerializable.Close();
             }
             catch (FileNotFoundException)
             {
                 getNumber.number = 1;
-                stream = new FileStream("number.dat", FileMode.Create, FileAccess.Write);
-                formatter.Serialize(stream, getNumber);
-                stream.Close();
+                streamSerializable = new FileStream("number.dat", FileMode.Create, FileAccess.Write);
+                formatterSerializable.Serialize(streamSerializable, getNumber);
+                streamSerializable.Close();
             }
+
             return getNumber.number;
         }
-        private TicketType TypeGenerator()
+
+        /// <summary>
+        /// Validation of serialization file for correctness
+        /// </summary>
+        private void ValidationSerialization()
         {
-            return (TicketType)rnd.Next(0, Enum.GetNames(typeof(TicketType)).Length);
+            try
+            {
+                //update serialization file
+                streamSerializable = new FileStream("number.dat", FileMode.Open, FileAccess.Write);
+                formatterSerializable.Serialize(streamSerializable, getNumber);
+                streamSerializable.Close();
+            }
+            catch (FileNotFoundException)
+            {
+                // If something happens to the serialization file
+                LogsList.Add("Error writing a unique ticket number");
+            }
         }
-        
+
+        /// <summary>
+        /// Randomly select one of the enum listed
+        /// </summary>    
+        private TicketTypeEnum.TicketType TypeGenerator()
+        {
+            return (TicketTypeEnum.TicketType)random.Next(0, Enum.GetNames(typeof(TicketTypeEnum.TicketType)).Length);
+        }
+
+        /// <summary>
+        ///  DateTime Generator. Randomly selects a date to a given range.
+        /// </summary>
+        /// <returns>Random datetime at a predetermined interval</returns>
         private DateTime DateTimeGenerator()
         {
-            //DateTime Generator. Randomly selects a date to a given range.
             DateTime start = DateTime.Now;
             DateTime end = new DateTime(2021,12,31);
-            return start.AddDays(rnd.Next((end - DateTime.Today).Days));
+
+            return start.AddDays(random.Next((end - DateTime.Today).Days));
         }
 
+        /// <summary>
+        /// Description Generator. Reads from a file to a list and randomly select.
+        /// </summary>
+        /// <returns>Randomly select string description</returns>
         private string DescriptionGenerator()
         {
-            //Description Generator. Reads from a file to a list and randomly select.
-            ReadToFIle file = new ReadToFIle("descriptionList");
-            logsList.AddRange(file.GetLogs());
-            description = file.GetResult();
-            return description[rnd.Next(0, description.Count())];
+            file.Reading(fileInfo.GetFileNameString("DescriptionFile"), fileInfo.GetFilePathString());
+            LogsList.AddRange(file.GetLogs());
+            Description = file.GetResult();
+
+            return Description[random.Next(0, Description.Count())];
         }
 
+        /// <summary>
+        /// Tag Generator. Reads from a file to a list, shuffle, and randomly selects the number of first tags.
+        /// </summary>
+        /// <returns>Array of string: Randomly selects the number of first tags</returns>
         private string[] TagsGenerator()
-        {
-            //Tag Generator. Reads from a file to a list, shuffle, and randomly selects the number of first tags.
-            ReadToFIle file = new ReadToFIle("tagsList");
-            logsList.AddRange(file.GetLogs());
-            tags = file.GetResult();
-            var shuffled = tags.OrderBy(a => Guid.NewGuid()).ToList();
-            int quantityTags = rnd.Next(1, tags.Count());
-           return shuffled.Take(quantityTags).ToArray();
+        {        
+            file.Reading(fileInfo.GetFileNameString("TagsFile"), fileInfo.GetFilePathString());
+            LogsList.AddRange(file.GetLogs());
+            Tags = file.GetResult();
+            var shuffled = Tags.OrderBy(a => Guid.NewGuid()).ToList();
+            int quantityTags = random.Next(1, Tags.Count());
+
+            return shuffled.Take(quantityTags).ToArray();
         }
 
         public List<string> GetLogs()
         {
-            return logsList;
+            return LogsList;
         }
 
     }

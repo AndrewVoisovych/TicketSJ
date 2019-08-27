@@ -1,33 +1,42 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace TicketJSWebAPI
+namespace WebAPI.Utils.Helpers
 {
-    public class ConfigurationHelper
+    /// <summary>
+    /// Helper for obtaining connection data to Azure Service Bus
+    /// </summary>
+    public sealed class ConfigurationHelper
     {
-        private  string connection;
-        private  string queueName;
+        private string connection;
+        private string queueName;
 
-        public  string ServiceBusConnectionString()
+        /// <summary>
+        /// Get Service Bus conenction string
+        /// </summary>
+        /// <returns></returns>
+        public string ServiceBusConnectionString()
         {
             if (string.IsNullOrWhiteSpace(connection))
             {
                 connection = GetServiceBusConnectionString();
             }
 
+
             return connection;
         }
 
+        /// <summary>
+        /// Get Queue Name
+        /// </summary>
+        /// <returns></returns>
         public  string QueueNameString()
         {
             if (string.IsNullOrWhiteSpace(queueName))
             {
                 queueName = GetQueueNameString();
             }
+
 
             return queueName;
         }
@@ -39,8 +48,9 @@ namespace TicketJSWebAPI
                 .AddJsonFile("appsettings.json");
 
             var config = builder.Build();
-
             var value = config.GetValue<string>("ServiceBusConnectionString");
+
+
             return value;
         }
 
@@ -51,11 +61,9 @@ namespace TicketJSWebAPI
                 .AddJsonFile("appsettings.json");
 
             var config = builder.Build();
-
             var value = config.GetValue<string>("QueueName");
+
             return value;
         }
-
-
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketJSWebAPI", "TicketJSWebAPI\TicketJSWebAPI.csproj", "{5087874D-6748-4870-A8C8-46E2263B147D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "TicketJSWebAPI\WebAPI.csproj", "{5087874D-6748-4870-A8C8-46E2263B147D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSJWindowsService", "TicketSJWindowsService\TicketSJWindowsService.csproj", "{0689BA70-CFC0-42C7-BDD1-593F741EF081}"
 EndProject
