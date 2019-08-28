@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
+using WindowsService.Utils.Helpers;
 
-namespace TicketSJWindowsService.Models
+namespace WindowsService.Entity
 {
     public partial class TicketSoftjournContext : DbContext
     {
@@ -11,11 +10,19 @@ namespace TicketSJWindowsService.Models
         public virtual DbSet<TicketToTags> TicketToTags { get; set; }
         public virtual DbSet<TicketType> TicketType { get; set; }
 
+        /// <summary>
+        /// Class Configuration Helper
+        /// </summary>
+        private ConfigurationHelper configuration;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            configuration = new ConfigurationHelper();
+
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=tcp:sjtickets.database.windows.net,1433;Initial Catalog=TicketSoftjourn;Persist Security Info=False;User ID=vois;Password=PaSSword12!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+               
+                optionsBuilder.UseSqlServer(@configuration.GetDatabaseConnectionString());
             }
         }
 

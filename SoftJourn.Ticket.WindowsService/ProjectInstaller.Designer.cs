@@ -1,4 +1,4 @@
-﻿namespace TicketSJWindowsService
+﻿namespace WindowsService
 {
     partial class ProjectInstaller
     {

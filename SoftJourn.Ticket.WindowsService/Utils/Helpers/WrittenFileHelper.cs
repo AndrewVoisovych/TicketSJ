@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TicketSJWindowsService
+
+namespace WindowsService.Utils.Helpers
 {
-    // To write to the log file information 
-    class WriteToFile
+    /// <summary>
+    /// Helper to write to the log file information 
+    /// </summary>
+    class WrittenFileHelper
     {
         public void  Write(string Message)
         {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TicketSJWindowsService.Models
+namespace WindowsService.Entity
 {
-    public partial class Ticket
+    public  partial class Ticket
     {
         public Ticket()
         {

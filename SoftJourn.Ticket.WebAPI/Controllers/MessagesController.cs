@@ -7,6 +7,7 @@ using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
 using WebAPI.Models;
 using WebAPI.Utils.Helpers;
+using WebAPI.Data;
 
 namespace WebAPI.Controllers
 {
@@ -14,11 +15,13 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public sealed class MessagesController : Controller
     {
-        // Azure ServiceBusConnectionString
+       
         /// <summary>
         /// Class Configuration Helper
         /// </summary>
-        private ConfigurationHelper configuration; 
+        private ConfigurationHelper configuration;
+
+        // Azure ServiceBusConnectionString
         private readonly string ServiceBusConnectionString;
         private readonly string QueueName;
 
@@ -68,7 +71,7 @@ namespace WebAPI.Controllers
             {
                 Ticket[] ticket = new Ticket[numberOfMessagesToSend];
 
-                DataGenerator generatedData;
+                DataGenerator dataGenerator;
 
                 for (var i = 0; i < numberOfMessagesToSend; i++)
                 {
@@ -76,10 +79,10 @@ namespace WebAPI.Controllers
                     ticket[i] = new Ticket();
                     
                     // Generate Data
-                    generatedData = new DataGenerator(ticket[i]); 
+                    dataGenerator = new DataGenerator(ticket[i]); 
 
 
-                    logsMessages.AddRange(generatedData.GetLogs());
+                    logsMessages.AddRange(dataGenerator.GetLogs());
                     
                     //Send
                     await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ticket[i]))));

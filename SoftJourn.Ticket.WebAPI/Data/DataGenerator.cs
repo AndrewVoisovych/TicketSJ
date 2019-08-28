@@ -8,7 +8,7 @@ using WebAPI.Models;
 using WebAPI.Utils;
 using WebAPI.Utils.Helpers;
 
-namespace WebAPI
+namespace WebAPI.Data
 {
     /// <summary>
     /// To generate a unique number, it is always copied from the file using serialization.
@@ -30,7 +30,6 @@ namespace WebAPI
         private IFormatter formatterSerializable; //serialization
         private CreateUniqueNumber getNumber;
 
-       
 
         private List<string> Tags { get; set; }
         private List<string> Description { get; set; }
